@@ -9,6 +9,14 @@ sysContact = '1.3.6.1.2.1.1.4.0'
 sysName = '1.3.6.1.2.1.1.5.0'
 sysLocation = '1.3.6.1.2.1.1.6.0'
 
+def banner():
+    print("""
+    *********************************************
+        SNMP Enumeration Tool
+        Author: sergiovks
+    *********************************************
+    """)
+
 def snmp_get(ip_address, community, oid):
     errorIndication, errorStatus, errorIndex, varBinds = next(
         getCmd(SnmpEngine(),
@@ -28,6 +36,7 @@ def snmp_get(ip_address, community, oid):
         return varBinds[0][1]
 
 def main():
+    banner
     parser = argparse.ArgumentParser(description='Retrieve system information using SNMP')
     parser.add_argument('-t', '--target', type=str, help='Target IP address', required=True)
     parser.add_argument('-w', '--wordlist', type=str, help='Wordlist for community string', default=None)
