@@ -26,17 +26,17 @@ def snmp_get(ip_address, community, oid):
                ObjectType(ObjectIdentity(oid)))
     )
     if errorIndication:
-        print(errorIndication)
+        print(f'Error: {errorIndication} (community: {community})')
         return None
     elif errorStatus:
-        print('%s at %s' % (errorStatus.prettyPrint(),
-                            errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
+        print(f'Error: {errorStatus.prettyPrint()} at {errorIndex and varBinds[int(errorIndex) - 1][0] or "?"} (community: {community})')
         return None
     else:
+        print(f'Retrieved value (community: {community}): {varBinds[0][1]}')
         return varBinds[0][1]
 
 def main():
-    banner
+    banner()
     parser = argparse.ArgumentParser(description='Retrieve system information using SNMP')
     parser.add_argument('-t', '--target', type=str, help='Target IP address', required=True)
     parser.add_argument('-w', '--wordlist', type=str, help='Wordlist for community string', default=None)
@@ -48,16 +48,15 @@ def main():
                 community_string = line.strip()
                 sys_descr = snmp_get(args.target, community_string, sysDescr)
                 if sys_descr:
-                    print(f'System Description ({args.target}): {sys_descr}')
+                    print(f'System Description ({args.target}, community: {community_string}): {sys_descr}')
                     break
     else:
         community_string = 'public'
         sys_descr = snmp_get(args.target, community_string, sysDescr)
         if sys_descr:
-            print(f'System Description ({args.target}): {sys_descr}')
+            print(f'System Description ({args.target}, community: {community_string}): {sys_descr}')
         else:
-            print(f'Could not retrieve system information from {args.target} using SNMP')
+            print(f'Could not retrieve system information from {args.target} using SNMP with community string {community_string}')
 
 if __name__ == '__main__':
     main()
-
